@@ -4,18 +4,24 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import IndexPage from './page/IndexPage';
-import "@arco-design/web-react/dist/css/arco.css";
+//theme
+import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";     
+//core
+import "primereact/resources/primereact.min.css";                                       
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<IndexPage />} />
-      </Routes>
-    </BrowserRouter>
+    <PrimeReactProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<IndexPage />} />
+        </Routes>
+      </BrowserRouter>
+    </PrimeReactProvider>
   </React.StrictMode>
 );
 
