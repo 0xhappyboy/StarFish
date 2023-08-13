@@ -7,7 +7,8 @@ import IndexPage from './page/IndexPage';
 //theme
 import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";     
 //core
-import "primereact/resources/primereact.min.css";                                       
+import "primereact/resources/primereact.min.css";     
+import 'primeicons/primeicons.css';                                  
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 
 const root = ReactDOM.createRoot(
