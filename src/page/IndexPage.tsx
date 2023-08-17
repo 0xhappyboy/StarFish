@@ -10,9 +10,44 @@ import { ListBox } from "primereact/listbox";
 import React from "react";
 import { Toolbar } from "primereact/toolbar";
 import "../css/page/index-page.css";
+import { listen } from "@tauri-apps/api/event";
+import { DEMO, NetCardList } from "../comm/constant";
+import { appWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api";
+import { isNull } from "../comm/global";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
+    //  net card list
+    const [netCardList, setNetCardList] = useState<any[]>([
+        { 'name': 'tmp' }
+    ]);
+    // event init
+    const eventInit = () => {
+        invoke('init_process');
+    }
+    // event listen init
+    const listenInitEvent = async () => {
+        // listen net carlist
+        await listen(NetCardList, (event) => {
+            var netCards = JSON.parse(String(event.payload));
+            if (!isNull(netCards)) {
+                var arr: React.SetStateAction<any[]> = [];
+                netCards.forEach((card: { name: any; }) => {
+                    arr.add({
+                        'name': card.name
+                    });
+                });
+                setNetCardList(arr);
+            }
+        })
+    }
+
+    // event demo 1
+    const eventDemo = () => {
+        appWindow.emit(DEMO, { message: 'Tauri is awesome!' })
+    }
+
     // head tool menu
     const headStartContent = (
         <React.Fragment>
@@ -29,14 +64,6 @@ const IndexPage: React.FC<Props> = ({ }) => {
             <i className="pi pi-check mr-10" style={{ fontSize: '25px' }}></i>
         </React.Fragment>
     );
-    //  left menu
-    const [leftMenuItems, setLeftMenuItems] = useState([
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
-    ]);
 
     // data table colums
     const [dataTableColumns, setDataTableColumns] = useState([
@@ -60,7 +87,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
     };
     const dataTableDataInit = () => {
         var arr = [];
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 1; i++) {
             arr.push({
                 index: i,
                 time: <Badge value="2"></Badge>,
@@ -186,13 +213,15 @@ const IndexPage: React.FC<Props> = ({ }) => {
 
     const endContent = (
         <React.Fragment>
-            <i className="pi pi-check mr-10"></i>
-            <i className="pi pi-check mr-10"></i>
-            <i className="pi pi-check mr-10"></i>
+            <i onClick={eventDemo} className="pi pi-check mr-10"></i>
+            <i onClick={eventDemo} className="pi pi-check mr-10"></i>
+            <i onClick={eventDemo} className="pi pi-check mr-10"></i>
         </React.Fragment>
     );
     // init
     useEffect(() => {
+        eventInit();
+        listenInitEvent();
         dataTableDataInit();
         TerminalService.on('command', commandHandler);
         return () => {
@@ -218,13 +247,13 @@ const IndexPage: React.FC<Props> = ({ }) => {
             <Splitter style={{ height: '87%', width: '100%', borderRadius: "0px", border: 'none', marginTop: '3px' }}>
                 {/* left menu */}
                 <SplitterPanel className="flex align-items-center justify-content-center" minSize={10} size={20}>
-                    <ListBox value={setLeftMenuItems} options={leftMenuItems} optionLabel="name" className="w-full" style={{ border: 'none' }} />
+                    <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none' }} />
                 </SplitterPanel>
                 {/* right area */}
                 <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
                     <Splitter layout="vertical">
-                        <SplitterPanel size={80} className="flex align-items-center justify-content-center" style={{ overflow: 'auto',position:'relative' }}>
-                            <DataTable className="style-1" scrollable value={dataTable} size={'small'} selectionMode={'single'} style={{ whiteSpace: 'nowrap',position:'absolute' }}>
+                        <SplitterPanel size={80} className="flex align-items-center justify-content-center" style={{ overflow: 'auto', position: 'relative' }}>
+                            <DataTable className="style-1" scrollable value={dataTable} size={'small'} selectionMode={'single'} style={{ whiteSpace: 'nowrap', position: 'absolute' }}>
                                 {dataTableColumns.map((col, i) => (<Column align={'center'} key={col.field} field={col.field} header={col.header} />))}
                             </DataTable>
                         </SplitterPanel>
