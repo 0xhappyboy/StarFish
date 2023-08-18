@@ -15,30 +15,30 @@ import { DEMO, NetCardList } from "../comm/constant";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api";
 import { isNull } from "../comm/global";
+import { Divider } from "primereact/divider";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
     //  net card list
-    const [netCardList, setNetCardList] = useState<any[]>([
-        { 'name': 'tmp' }
-    ]);
+    const [netCardList, setNetCardList] = useState<Array<any>>([]);
     // event init
     const eventInit = () => {
         invoke('init_process');
     }
     // event listen init
+    var netCardArr: Array<any> = [];
     const listenInitEvent = async () => {
         // listen net carlist
         await listen(NetCardList, (event) => {
             var netCards = JSON.parse(String(event.payload));
             if (!isNull(netCards)) {
-                var arr: React.SetStateAction<any[]> = [];
                 netCards.forEach((card: { name: any; }) => {
-                    arr.add({
+                    netCardArr.push({
                         'name': card.name
                     });
                 });
-                setNetCardList(arr);
+                setNetCardList([]);
+                setNetCardList(netCardArr);
             }
         })
     }
@@ -230,10 +230,56 @@ const IndexPage: React.FC<Props> = ({ }) => {
     }, []);
     return (
         <div style={{ height: '100%' }}>
-            {/* head tool bar */}
-            <Toolbar start={headStartContent} end={headEndContent} style={{ border: 'none', borderRadius: '0px', width: '100%', height: '5%', padding: 'padding: 10px 20px' }} />
+            {/* panel area */}
+            <Splitter layout="vertical" gutterSize={0} style={{ height: '100%', width: '100%', borderRadius: "0px", border: 'none' }}>
+                {/* head area */}
+                <SplitterPanel minSize={5} size={5} style={{ position: 'relative' }}>
+                    {/* head tool bar */}
+                    <Toolbar start={headStartContent} end={headEndContent} style={{ border: 'none', borderRadius: '0px', width: '100%', height: '5%', padding: 'padding: 10px 20px' }} />
+                    <Divider style={{ position: 'absolute', bottom: '1px', margin: '0px 0px' }} />
+                </SplitterPanel>
+                {/* body area */}
+                <SplitterPanel minSize={90} size={90}>
+                    <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
+                        {/* left menu */}
+                        <SplitterPanel className="flex align-items-center justify-content-center" minSize={10} size={20}>
+                            <ScrollPanel style={{ width: '100%',maxHeight:'200px' }} className="custombar1">
+                                <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none' }} />
+                            </ScrollPanel>
+                        </SplitterPanel>
+                        {/* right area */}
+                        <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
+                            <Splitter layout="vertical">
+                                <SplitterPanel size={80} className="flex align-items-center justify-content-center" style={{ overflow: 'auto', position: 'relative' }}>
+                                    <DataTable className="style-1" scrollable value={dataTable} size={'small'} selectionMode={'single'} style={{ whiteSpace: 'nowrap', position: 'absolute' }}>
+                                        {dataTableColumns.map((col, i) => (<Column align={'center'} key={col.field} field={col.field} header={col.header} />))}
+                                    </DataTable>
+                                </SplitterPanel>
+                                <SplitterPanel size={20} className="flex align-items-center justify-content-center" >
+                                    <Splitter layout="horizontal">
+                                        <SplitterPanel className="flex align-items-center justify-content-center" size={50} >
+                                            {/* network packet info */}
+                                            <ScrollPanel style={{ height: '100%', border: 'none', padding: '0px', position: 'static', overflow: 'auto', maxHeight: '300px' }} >
+                                            </ScrollPanel>
+                                        </SplitterPanel>
+                                        <SplitterPanel className="flex align-items-center justify-content-center" size={50} >
+                                        </SplitterPanel>
+                                    </Splitter>
+                                </SplitterPanel>
+                            </Splitter>
+                        </SplitterPanel>
+                    </Splitter >
+                </SplitterPanel>
+                {/* foot area */}
+                <SplitterPanel minSize={5} size={5} style={{ position: 'relative' }}>
+                    {/* bottom bar */}
+                    <Toolbar start={startContent} end={endContent} style={{ border: 'none', borderRadius: '0px', padding: '0px 10px', bottom: '0px', height: '4%', width: '100%', zIndex: '10' }} />
+                </SplitterPanel>
+            </Splitter>
+
+
             {/* input box */}
-            <div className="card flex justify-content-center w-full" style={{ height: "4%", borderRadius: "0px" }}>
+            {/* <div className="card flex justify-content-center w-full" style={{ height: "4%", borderRadius: "0px" }}>
                 <div className="p-inputgroup w-full" style={{ borderRadius: "0px" }}>
                     <span className="p-inputgroup-addon" style={{ borderRadius: "0px" }}>
                         <i className="pi pi-star-fill"></i>
@@ -242,37 +288,9 @@ const IndexPage: React.FC<Props> = ({ }) => {
                     <span className="p-inputgroup-addon" style={{ borderRadius: "0px" }}></span>
                     <span className="p-inputgroup-addon" style={{ borderRadius: "0px" }}></span>
                 </div>
-            </div>
-            {/* panel area */}
-            <Splitter style={{ height: '87%', width: '100%', borderRadius: "0px", border: 'none', marginTop: '3px' }}>
-                {/* left menu */}
-                <SplitterPanel className="flex align-items-center justify-content-center" minSize={10} size={20}>
-                    <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none' }} />
-                </SplitterPanel>
-                {/* right area */}
-                <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
-                    <Splitter layout="vertical">
-                        <SplitterPanel size={80} className="flex align-items-center justify-content-center" style={{ overflow: 'auto', position: 'relative' }}>
-                            <DataTable className="style-1" scrollable value={dataTable} size={'small'} selectionMode={'single'} style={{ whiteSpace: 'nowrap', position: 'absolute' }}>
-                                {dataTableColumns.map((col, i) => (<Column align={'center'} key={col.field} field={col.field} header={col.header} />))}
-                            </DataTable>
-                        </SplitterPanel>
-                        <SplitterPanel size={20} className="flex align-items-center justify-content-center" >
-                            <Splitter layout="horizontal">
-                                <SplitterPanel className="flex align-items-center justify-content-center" size={50} >
-                                    {/* network packet info */}
-                                    <ScrollPanel style={{ height: '100%', border: 'none', padding: '0px', position: 'static', overflow: 'auto', maxHeight: '300px' }} >
-                                    </ScrollPanel>
-                                </SplitterPanel>
-                                <SplitterPanel className="flex align-items-center justify-content-center" size={50} >
-                                </SplitterPanel>
-                            </Splitter>
-                        </SplitterPanel>
-                    </Splitter>
-                </SplitterPanel>
-            </Splitter >
+            </div> */}
             {/* bottom bar */}
-            <Toolbar start={startContent} end={endContent} style={{ border: 'none', borderRadius: '0px', padding: '0px 10px', bottom: '0px', height: '4%', width: '100%', zIndex: '10' }} />
+            {/* <Toolbar start={startContent} end={endContent} style={{ border: 'none', borderRadius: '0px', padding: '0px 10px', bottom: '0px', height: '4%', width: '100%', zIndex: '10' }} /> */}
         </div >
     );
 };
