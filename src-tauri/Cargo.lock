@@ -66,6 +66,7 @@ checksum = "3b13c32d80ecc7ab747b80c3784bce54ee8a7a0cc4fbda9bf4cda2cf6fe90854"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "command",
  "events",
  "net",
  "serde",
@@ -357,6 +358,16 @@ checksum = "35ed6e9d84f0b51a7f52daf1c7d71dd136fd7a3f41a8462b8cdb8c78d920fad4"
 dependencies = [
  "bytes",
  "memchr",
+]
+
+[[package]]
+name = "command"
+version = "0.1.0"
+dependencies = [
+ "net",
+ "serde",
+ "serde_json",
+ "tauri",
 ]
 
 [[package]]
