@@ -60,8 +60,8 @@
         "resizable": true,
         "title": "starfish",
         "width": 800,
-        "minHeight": 300,
-        "minWidth": 600
+        "minHeight": 635,
+        "minWidth": 800
       }
     ]
   }

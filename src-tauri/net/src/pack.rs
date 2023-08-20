@@ -1,3 +1,5 @@
+use std::ptr::null;
+
 use pnet::datalink::Channel::Ethernet;
 use pnet::datalink::{
     self, Channel, Config, DataLinkReceiver, DataLinkSender, EtherType, NetworkInterface,
@@ -29,24 +31,33 @@ pub fn get_net_card_channel(
 ) -> (Box<dyn DataLinkSender>, Box<dyn DataLinkReceiver>) {
     let (mut send, mut read) = match datalink::channel(&interface, Config::default()) {
         Ok(Ethernet(tx, rx)) => (tx, rx),
-        Ok(_) => panic!("Unhandled channel type"),
-        Err(e) => panic!(
-            "An error occurred when creating the datalink channel: {}",
-            e
-        ),
+        Ok(_) => {
+            panic!("Unhandled channel type")
+        }
+        Err(e) => {
+            panic!(
+                "An error occurred when creating the datalink channel: {}",
+                e
+            )
+        }
     };
     (send, read)
 }
 
 // net package struct
-#[derive(Clone, serde::Serialize, Debug)]
+#[derive(serde::Serialize, Debug)]
 pub struct NetPackage {
-    pub pack_size: usize,
+    pub protocol: String,
+    pub source: String,
+    pub destination: String,
+    pub size: usize,
+    pub info: String,
+    pub data: Vec<u8>,
 }
 
 impl NetPackage {
     // net package deconstruct
-    pub fn new(ethernet: &EthernetPacket) -> NetPackage {
+    pub fn new(ethernet: &EthernetPacket) -> Option<NetPackage> {
         match ethernet.get_ethertype() {
             EtherTypes::Ipv4 => {
                 let ipv4_pack = Ipv4Packet::new(ethernet.payload());
@@ -55,41 +66,46 @@ impl NetPackage {
                         IpNextHeaderProtocols::Tcp => {
                             // create tcp package
                             let tcp_pack_head = TcpPacket::new(ipv4_pack.payload()).unwrap();
-                            println!(
-                                "tcp 包:{:?},包数据:{:?}",
-                                tcp_pack_head,
-                                tcp_pack_head.payload()
-                            );
                             let net_pack = NetPackage {
-                                pack_size: tcp_pack_head.packet_size(),
+                                protocol: String::from("tcp"),
+                                source: format!(
+                                    "{}:{}",
+                                    ipv4_pack.get_source(),
+                                    tcp_pack_head.get_source()
+                                ),
+                                destination: format!(
+                                    "{}:{}",
+                                    ipv4_pack.get_destination(),
+                                    tcp_pack_head.get_destination()
+                                ),
+                                size: tcp_pack_head.packet_size(),
+                                data: tcp_pack_head.payload().to_vec(),
+                                info: format!(
+                                    "Seq:{} ACK:{} Win:{} Flag:{} Offset:{}",
+                                    tcp_pack_head.get_sequence().to_string(),
+                                    tcp_pack_head.get_acknowledgement().to_string(),
+                                    tcp_pack_head.get_window(),
+                                    tcp_pack_head.get_flags(),
+                                    tcp_pack_head.get_data_offset()
+                                ),
                             };
-                            return net_pack;
+                            return Some(net_pack);
                         }
-                        IpNextHeaderProtocols::Udp => {
-                            let udp_pack = UdpPacket::new(ipv4_pack.packet());
-                            let net_pack = NetPackage { pack_size: 1 };
-                            return net_pack;
+                        IpNextHeaderProtocols::Udp => None,
+                        _ => {
+                            println!("Ignoring packet");
+                            None
                         }
-                        _ => println!("Ignoring packet"),
                     }
+                } else {
+                    None
                 }
-                let net_pack = NetPackage { pack_size: 1 };
-                net_pack
             }
-            EtherTypes::Ipv6 => {
-                let ipv6_pack = Ipv6Packet::new(ethernet.payload());
-                let net_pack = NetPackage { pack_size: 1 };
-                net_pack
-            }
-            EtherTypes::Arp => {
-                let arp_pack = ArpPacket::new(ethernet.payload());
-                let net_pack = NetPackage { pack_size: 1 };
-                net_pack
-            }
+            EtherTypes::Ipv6 => None,
+            EtherTypes::Arp => None,
             _ => {
                 println!("Ignoring packet");
-                let net_pack = NetPackage { pack_size: 1 };
-                net_pack
+                None
             }
         }
     }
