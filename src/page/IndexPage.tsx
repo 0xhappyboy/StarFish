@@ -1,21 +1,19 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { InputNumber } from "primereact/inputnumber";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { useEffect, useState } from "react";
-import { TerminalService } from 'primereact/terminalservice';
 import { Badge } from "primereact/badge";
 import { ScrollPanel } from "primereact/scrollpanel";
 import { ListBox } from "primereact/listbox";
 import React from "react";
 import { Toolbar } from "primereact/toolbar";
 import "../css/page/index-page.css";
-import { listen } from "@tauri-apps/api/event";
-import { DEMO, NetCardList } from "../comm/constant";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api";
 import { isNull } from "../comm/global";
 import { Divider } from "primereact/divider";
+import { GET_NET_CARD_LIST } from "../comm/command";
+import { DEMO } from "../comm/constant";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
@@ -23,12 +21,11 @@ const IndexPage: React.FC<Props> = ({ }) => {
     const [netCardList, setNetCardList] = useState<Array<any>>([]);
     // event init
     const eventInit = () => {
-        invoke('init_process');
     }
     // event listen init
     var netCardArr: Array<any> = [];
     const netCardInit = () => {
-        invoke('get_card_list').then((netCardListStr: any) => {
+        invoke(GET_NET_CARD_LIST, { invokeMessage: 'Hello!' }).then((netCardListStr: any) => {
             var netCards = JSON.parse(netCardListStr);
             if (!isNull(netCards)) {
                 netCards.forEach((card: { name: any; }) => {
@@ -147,7 +144,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                     <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
                         {/* left menu */}
                         <SplitterPanel className="flex align-items-center justify-content-center" minSize={10} size={20} >
-                            <ScrollPanel style={{ width: '100%', maxHeight: '500px', height: '300px' }} className="custombar1">
+                            <ScrollPanel style={{ width: '100%', maxHeight: '800px', height: '500px' }} className="custombar1">
                                 <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none' }} />
                             </ScrollPanel>
                         </SplitterPanel>

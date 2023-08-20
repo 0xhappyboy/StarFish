@@ -1,5 +1,6 @@
-use pnet::datalink::{self, NetworkInterface};
+use pnet::datalink;
 
+// net card
 #[derive(Clone, Debug, serde::Serialize)]
 pub struct NetCard {
     pub name: String,

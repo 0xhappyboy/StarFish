@@ -365,6 +365,7 @@ name = "command"
 version = "0.1.0"
 dependencies = [
  "net",
+ "pnet",
  "serde",
  "serde_json",
  "tauri",
@@ -673,6 +674,11 @@ dependencies = [
 [[package]]
 name = "events"
 version = "0.1.0"
+dependencies = [
+ "net",
+ "pnet",
+ "tauri",
+]
 
 [[package]]
 name = "fastrand"
@@ -1589,6 +1595,7 @@ dependencies = [
  "pnet",
  "serde",
  "serde_json",
+ "tauri",
 ]
 
 [[package]]
