@@ -44,7 +44,6 @@ pub struct NetPackage {
 impl NetPackage {
     // net package deconstruct
     pub fn new(ethernet: &EthernetPacket) -> NetPackage {
-        println!("网络包:{:?}", ethernet);
         match ethernet.get_ethertype() {
             EtherTypes::Ipv4 => {
                 let ipv4_pack = Ipv4Packet::new(ethernet.payload());
@@ -62,7 +61,7 @@ impl NetPackage {
                 net_pack
             }
             _ => {
-                println!("Ignoring non IPv4 packet");
+                println!("Ignoring packet");
                 let net_pack = NetPackage { index: 1 };
                 net_pack
             }
