@@ -1,3 +1,4 @@
+use net::card::NetCard;
 use tauri::{Manager, Window};
 
 use command::command::*;
@@ -8,11 +9,12 @@ fn main() {
         .setup(|app| {
             let mut main_window = app.get_window("main").unwrap();
             std::thread::spawn(move || {
-                emit_net_package_event(&mut main_window, String::from("en0"));
+                let net_card_list = NetCard::new_list();
+                emit_net_package_event(&mut main_window, "en0".to_string()).unwrap();
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_card_list])
+        .invoke_handler(tauri::generate_handler![get_net_card_list])
         .run(tauri::generate_context!())
         .expect("failed to run app");
 }
