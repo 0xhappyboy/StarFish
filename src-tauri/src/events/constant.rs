@@ -4,4 +4,3 @@ pub mod EventTable {
     pub const NET_CARD_LIST_EVENT: &'static str = "NET_CARD_LIST_EVENT";
     pub const NET_PACKAGE_EVENT: &'static str = "NET_PACKAGE_EVENT";
 }
-

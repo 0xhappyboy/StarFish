@@ -1,8 +1,10 @@
+use events::events::emit_net_package_event;
 use net::card::NetCard;
-use tauri::{Manager, Window};
-
-use command::command::*;
-use events::events::*;
+use tauri::Manager;
+mod command;
+mod events;
+mod net;
+use crate::command::command::get_net_card_list;
 
 fn main() {
     tauri::Builder::default()

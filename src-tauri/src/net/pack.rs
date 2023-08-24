@@ -59,6 +59,10 @@ impl NetPackage {
     // net package deconstruct
     pub fn new(ethernet: &EthernetPacket) -> Option<NetPackage> {
         match ethernet.get_ethertype() {
+            EtherTypes::Arp => {
+                let arp_pacl = ArpPacket::new(ethernet.payload());
+                None
+            }
             EtherTypes::Ipv4 => {
                 let ipv4_pack = Ipv4Packet::new(ethernet.payload());
                 if let Some(ipv4_pack) = ipv4_pack {
@@ -91,7 +95,31 @@ impl NetPackage {
                             };
                             return Some(net_pack);
                         }
-                        IpNextHeaderProtocols::Udp => None,
+                        IpNextHeaderProtocols::Udp => {
+                            // create tcp package
+                            let upd_pack_head = UdpPacket::new(ipv4_pack.payload()).unwrap();
+                            let net_pack = NetPackage {
+                                protocol: String::from("upd"),
+                                source: format!(
+                                    "{}:{}",
+                                    ipv4_pack.get_source(),
+                                    upd_pack_head.get_source()
+                                ),
+                                destination: format!(
+                                    "{}:{}",
+                                    ipv4_pack.get_destination(),
+                                    upd_pack_head.get_destination()
+                                ),
+                                size: upd_pack_head.packet_size(),
+                                data: upd_pack_head.payload().to_vec(),
+                                info: format!(
+                                    "Let:{} CheckSum:{}",
+                                    upd_pack_head.get_length().to_string(),
+                                    upd_pack_head.get_checksum().to_string(),
+                                ),
+                            };
+                            return Some(net_pack);
+                        }
                         _ => {
                             println!("Ignoring packet");
                             None

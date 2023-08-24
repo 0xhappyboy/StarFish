@@ -4,12 +4,12 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import IndexPage from './page/IndexPage';
-//theme
-import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";     
 //core
 import "primereact/resources/primereact.min.css";     
 import 'primeicons/primeicons.css';                                  
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+//theme
+import "primereact/resources/themes/md-light-indigo/theme.css";     
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
