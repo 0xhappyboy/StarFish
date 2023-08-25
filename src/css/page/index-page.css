@@ -57,3 +57,15 @@
     padding-left: 10px !important;
     padding-top: 10px !important;
 }
+
+.p-align-left {
+    padding: 0px 0px !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+    border: none !important;
+}
+
+.tcp {
+    background-color: rebeccapurple !important;
+}

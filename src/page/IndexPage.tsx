@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Column } from "primereact/column";
 import { DataTable, DataTableRowClickEvent } from "primereact/datatable";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -28,6 +29,14 @@ interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
     // data table scroll height
     const [dataTableScrollHeight, setDataTableScrollHeight] = useState('400px');
+    // data table scroll top
+    const dataTableCrollTop = () => {
+        document.getElementsByClassName('dataTable')[0].scrollTo(0, 0);
+    }
+    // data table scroll bottom
+    const dataTableSrollBottom = () => {
+        document.getElementsByClassName('dataTable')[0].scrollTo(0, document.getElementsByClassName('dataTable')[0].scrollHeight);
+    }
     // network card name
     const [netCardName, setNetCardName] = useState('');
     // net packets count
@@ -96,18 +105,18 @@ const IndexPage: React.FC<Props> = ({ }) => {
     // event listen init
     var netCardArr: Array<any> = [];
     const netCardInit = () => {
-        // invoke(GET_NET_CARD_LIST).then((netCardListStr: any) => {
-        //     var netCards = JSON.parse(netCardListStr);
-        //     if (!isNull(netCards)) {
-        //         netCards.forEach((card: { name: any; }) => {
-        //             netCardArr.push({
-        //                 'name': card.name
-        //             });
-        //         });
-        //         setNetCardList([]);
-        //         setNetCardList(netCardArr);
-        //     }
-        // })
+        invoke(GET_NET_CARD_LIST).then((netCardListStr: any) => {
+            var netCards = JSON.parse(netCardListStr);
+            if (!isNull(netCards)) {
+                netCards.forEach((card: { name: any; }) => {
+                    netCardArr.push({
+                        'name': card.name
+                    });
+                });
+                setNetCardList([]);
+                setNetCardList(netCardArr);
+            }
+        })
     }
     // head tool menu
     const headStartContent = (
@@ -118,8 +127,8 @@ const IndexPage: React.FC<Props> = ({ }) => {
             <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#f5f5f5', width: '1px' }} />
             <i className="pi pi-file-export" style={{ fontSize: '20px', marginRight: '20px' }}></i>
             <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#f5f5f5', width: '1px' }} />
-            <i className="pi pi-angle-double-up" style={{ fontSize: '20px', marginRight: '20px' }}></i>
-            <i className="pi pi-angle-double-down" style={{ fontSize: '20px', marginRight: '20px' }}></i>
+            <i className="pi pi-angle-double-up" onClick={dataTableCrollTop} style={{ fontSize: '20px', marginRight: '20px' }}></i>
+            <i className="pi pi-angle-double-down" onClick={dataTableSrollBottom} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
     );
 
@@ -127,13 +136,13 @@ const IndexPage: React.FC<Props> = ({ }) => {
         <React.Fragment>
         </React.Fragment>
     );
-
     // data table colums
     const [netPacketDataTableColumns, setNetPacketDataTableColumns] = useState(NetPacketDataTableColumns);
     let tmpNetPacketDataTableItemArr: Array<NetPacketDataTableItem> = [];
     let netPacketDataTableItemArr: Array<NetPacketDataTableItem> = [
         {
-            protocol: <Tag value='tcp' />,
+            protocol:'tcp',
+            protocolEle: <Tag value='tcp' className="tcp" />,
             source: 'yuiyyyi',
             destination: 'yuiyyyi',
             size: 123,
@@ -141,172 +150,72 @@ const IndexPage: React.FC<Props> = ({ }) => {
             info: 'yuiyyyi',
         },
         {
-            protocol: <Tag value='tcp' />,
+            protocol:'udp',
+            protocolEle: <Tag value='udp' className="udp" />,
             source: 'yuiyyyi',
             destination: 'yuiyyyi',
             size: 123,
             data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
             info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        }, {
-            protocol: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
+        }
     ];
+
+    // ---------------- column setting start ----------------
+    const makeProtocolColor =(protocol:String)=>{
+        if(protocol==='tcp'){
+            return '#e4ffcc';
+        }else if(protocol==='udp'){
+            return '#f0d1fc';
+        }
+    }
+    const sourceColumnBody = (rowData: any) => {
+        // eslint-disable-next-line react/style-prop-object
+        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.source}</div>;
+    };
+    const destinationColumnBody = (rowData: any) => {
+        // eslint-disable-next-line react/style-prop-object
+        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.destination}</div>;
+    };
+    const protocolEleColumnBody = (rowData: any) => {
+        // eslint-disable-next-line react/style-prop-object
+        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol) }}>{rowData.protocolEle}</div>;
+    };
+    const sizeColumnBody = (rowData: any) => {
+        // eslint-disable-next-line react/style-prop-object
+        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.size}</div>;
+    };
+    const infoColumnBody = (rowData: any) => {
+        // eslint-disable-next-line react/style-prop-object
+        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.info}</div>;
+    };
+    // ---------------- column setting end ----------------
+
     const [netPacketDataTableItemList, setNetPacketDataTableItemList] = useState(netPacketDataTableItemArr);
     // listen net packet data
+    const makeNetPacketTag = (type: String) => {
+        return <Tag value={type} className='{type}' />
+    }
     const listenNetPacketData = async () => {
         await listen(NET_PACKAGE_EVENT, (res) => {
             if (!isNull(res.payload)) {
                 var n_packet = JSON.parse(JSON.stringify(res.payload));
                 let nP = {
-                    protocol: <Tag value='tcp' />,
+                    protocol: n_packet.protocol,
+                    protocolEle: makeNetPacketTag(n_packet.protocol),
                     source: n_packet.source,
                     destination: n_packet.destination,
                     size: n_packet.size,
                     data: n_packet.data,
                     info: n_packet.info,
                 };
-                if (n_packet.protocol === 'tcp') {
-                    nP.protocol = <Tag severity="info" value='tcp' />;
-                } else if (n_packet.protocol == 'udp') {
-                    nP.protocol = <Tag severity="success" value='udp' />;
-                }
                 tmpNetPacketDataTableItemArr.push(nP);
                 netPacketDataTableItemArr = [...tmpNetPacketDataTableItemArr];
                 setNetPacketDataTableItemList(netPacketDataTableItemArr);
                 // net packet numberee
                 tmpPacketsCount += 1;
                 setPacketsCount(tmpPacketsCount);
+                // data table scroll bottom
+                dataTableSrollBottom();
             }
         })
     }
@@ -370,14 +279,13 @@ const IndexPage: React.FC<Props> = ({ }) => {
         eventInit();
         netCardInit();
         listenNetPacketData();
-
         TerminalService.on('command', commandHandler);
         return () => {
             TerminalService.off('command', commandHandler);
         };
     }, []);
 
-    
+
     return (
         <div style={{ height: '100%' }}>
             {/* panel area */}
@@ -393,30 +301,43 @@ const IndexPage: React.FC<Props> = ({ }) => {
                     <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
                         {/* left menu */}
                         <SplitterPanel style={{ position: 'relative', overflow: 'auto' }} className="flex align-items-center justify-content-center" minSize={10} size={10} >
-                            <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none', position: 'absolute', width: '100%' }} />
+                            <Accordion multiple activeIndex={[0]} style={{ position: 'absolute', width: '100%' }}>
+                                <AccordionTab header={'NIC'} >
+                                    <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none', width: '100%' }} />
+                                </AccordionTab>
+                            </Accordion>
                         </SplitterPanel>
                         {/* right area */}
                         <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={90}>
                             <Splitter layout="vertical"
                                 onResizeEnd={(e) => {
-
-}}>
+                                    // set data table scroll height
+                                    setDataTableScrollHeight(document.getElementsByClassName('dataTable')[0].clientHeight + 'px');
+                                }}>
                                 <SplitterPanel
                                     size={80}
                                     minSize={50}
-                                    className="flex align-items-center justify-content-center"
+                                    className="dataTable flex align-items-center justify-content-center"
                                     style={{ overflow: 'auto', position: 'relative', width: '100%' }}>
                                     <DataTable
+                                        resizableColumns
+                                        lazy={true}
                                         onRowClick={dataTableRowClickEvent}
-                                        className="style-1"
                                         virtualScrollerOptions={{ itemSize: 50, lazy: true }}
-                                        scrollHeight={dataTableScrollHeight}
-                                        scrollable
                                         value={netPacketDataTableItemList}
-                                        size={'small'} selectionMode={'single'}
+                                        size={'small'}
+                                        selectionMode={'single'}
                                         style={{ width: '100%', height: '100%', whiteSpace: 'nowrap', position: 'absolute' }}>
-                                        {netPacketDataTableColumns.map((col, i) => (<Column style={{ textAlign: "left" }}
-                                            align={'left'} key={col.field} field={col.field} header={col.header} />))}
+                                        <Column body={sourceColumnBody} style={{ textAlign: "left" }}
+                                            align={'left'} key={'source'} field={'source'} header={'Source'} />
+                                        <Column body={destinationColumnBody} style={{ textAlign: "left" }}
+                                            align={'left'} key={'destination'} field={'destination'} header={'Destination'} />
+                                        <Column body={protocolEleColumnBody} style={{ textAlign: "left" }}
+                                            align={'left'} key={'protocolEle'} field={'protocolEle'} header={'Protocol'} />
+                                        <Column body={sizeColumnBody} style={{ textAlign: "left" }}
+                                            align={'left'} key={'size'} field={'size'} header={'Size'} />
+                                        <Column body={infoColumnBody} style={{ textAlign: "left" }}
+                                            align={'left'} key={'info'} field={'info'} header={'Info'} />
                                     </DataTable>
                                 </SplitterPanel>
                                 <SplitterPanel size={20} minSize={10} className="flex align-items-center justify-content-center" >
