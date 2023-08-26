@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Column } from "primereact/column";
-import { DataTable, DataTableRowClickEvent } from "primereact/datatable";
+import { DataTable, DataTableRowClickEvent, DataTableSelection } from "primereact/datatable";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { createRef, useEffect, useRef, useState } from "react";
 import { Badge } from "primereact/badge";
@@ -27,14 +27,17 @@ import { TerminalService } from 'primereact/terminalservice';
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
+    const [selectedProduct, setSelectedProduct] = useState(null);
     // data table scroll height
     const [dataTableScrollHeight, setDataTableScrollHeight] = useState('400px');
     // data table scroll top
     const dataTableCrollTop = () => {
+        document.getElementsByClassName('dataTableBox')[0].scrollTo(0, 0);
         document.getElementsByClassName('dataTable')[0].scrollTo(0, 0);
     }
     // data table scroll bottom
     const dataTableSrollBottom = () => {
+        document.getElementsByClassName('dataTableBox')[0].scrollTo(0, document.getElementsByClassName('dataTableBox')[0].scrollHeight);
         document.getElementsByClassName('dataTable')[0].scrollTo(0, document.getElementsByClassName('dataTable')[0].scrollHeight);
     }
     // network card name
@@ -124,9 +127,9 @@ const IndexPage: React.FC<Props> = ({ }) => {
             <i className="pi pi-play" style={{ fontSize: '20px', marginRight: '20px' }}></i>
             <i className="pi pi-refresh" style={{ fontSize: '20px', marginRight: '20px' }}></i>
             <i className="pi pi-stop" style={{ fontSize: '20px', marginRight: '20px' }}></i>
-            <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#f5f5f5', width: '1px' }} />
+            <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#272727', width: '1px' }} />
             <i className="pi pi-file-export" style={{ fontSize: '20px', marginRight: '20px' }}></i>
-            <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#f5f5f5', width: '1px' }} />
+            <Divider layout="vertical" style={{ margin: '0px auto', marginRight: '20px', backgroundColor: '#272727', width: '1px' }} />
             <i className="pi pi-angle-double-up" onClick={dataTableCrollTop} style={{ fontSize: '20px', marginRight: '20px' }}></i>
             <i className="pi pi-angle-double-down" onClick={dataTableSrollBottom} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
@@ -141,8 +144,8 @@ const IndexPage: React.FC<Props> = ({ }) => {
     let tmpNetPacketDataTableItemArr: Array<NetPacketDataTableItem> = [];
     let netPacketDataTableItemArr: Array<NetPacketDataTableItem> = [
         {
-            protocol:'tcp',
-            protocolEle: <Tag value='tcp' className="tcp" />,
+            protocol: 'tcp',
+            protocolEle: <Tag value='tcp' />,
             source: 'yuiyyyi',
             destination: 'yuiyyyi',
             size: 123,
@@ -150,58 +153,120 @@ const IndexPage: React.FC<Props> = ({ }) => {
             info: 'yuiyyyi',
         },
         {
-            protocol:'udp',
-            protocolEle: <Tag value='udp' className="udp" />,
+            protocol: 'udp',
+            protocolEle: <Tag value='udp' />,
             source: 'yuiyyyi',
             destination: 'yuiyyyi',
             size: 123,
             data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
             info: 'yuiyyyi',
-        }
+        },
+        {
+            protocol: 'udp',
+            protocolEle: <Tag value='udp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'udp',
+            protocolEle: <Tag value='udp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'udp',
+            protocolEle: <Tag value='udp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'udp',
+            protocolEle: <Tag value='udp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'tcp',
+            protocolEle: <Tag value='tcp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'tcp',
+            protocolEle: <Tag value='tcp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
+        {
+            protocol: 'tcp',
+            protocolEle: <Tag value='tcp' />,
+            source: 'yuiyyyi',
+            destination: 'yuiyyyi',
+            size: 123,
+            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
+            info: 'yuiyyyi',
+        },
     ];
 
-    // ---------------- column setting start ----------------
-    const makeProtocolColor =(protocol:String)=>{
-        if(protocol==='tcp'){
-            return '#e4ffcc';
-        }else if(protocol==='udp'){
-            return '#f0d1fc';
+    // ---------------- make protocol tag ----------------
+    const makeProtocolTag = (protocol: String) => {
+        if (protocol === 'tcp') {
+            return <Tag severity="success" value={protocol} />;
+        } else if (protocol === 'udp') {
+            return <Tag severity="info" value={protocol} />;
+        }else{
+            return <Tag severity="info" value={protocol} />;
         }
     }
     const sourceColumnBody = (rowData: any) => {
         // eslint-disable-next-line react/style-prop-object
-        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.source}</div>;
+        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.source}</div>;
     };
     const destinationColumnBody = (rowData: any) => {
         // eslint-disable-next-line react/style-prop-object
-        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.destination}</div>;
+        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.destination}</div>;
     };
     const protocolEleColumnBody = (rowData: any) => {
         // eslint-disable-next-line react/style-prop-object
-        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol) }}>{rowData.protocolEle}</div>;
+        return <div className={rowData.protocol} >{rowData.protocolEle}</div>;
     };
     const sizeColumnBody = (rowData: any) => {
         // eslint-disable-next-line react/style-prop-object
-        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.size}</div>;
+        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.size}</div>;
     };
     const infoColumnBody = (rowData: any) => {
         // eslint-disable-next-line react/style-prop-object
-        return <div style={{ backgroundColor: makeProtocolColor(rowData.protocol), height: '26px', lineHeight: '26px' }}>{rowData.info}</div>;
+        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.info}</div>;
     };
     // ---------------- column setting end ----------------
 
     const [netPacketDataTableItemList, setNetPacketDataTableItemList] = useState(netPacketDataTableItemArr);
     // listen net packet data
-    const makeNetPacketTag = (type: String) => {
-        return <Tag value={type} className='{type}' />
-    }
     const listenNetPacketData = async () => {
         await listen(NET_PACKAGE_EVENT, (res) => {
             if (!isNull(res.payload)) {
                 var n_packet = JSON.parse(JSON.stringify(res.payload));
                 let nP = {
                     protocol: n_packet.protocol,
-                    protocolEle: makeNetPacketTag(n_packet.protocol),
+                    protocolEle: makeProtocolTag(n_packet.protocol),
                     source: n_packet.source,
                     destination: n_packet.destination,
                     size: n_packet.size,
@@ -286,6 +351,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
     }, []);
 
 
+
     return (
         <div style={{ height: '100%' }}>
             {/* panel area */}
@@ -294,13 +360,13 @@ const IndexPage: React.FC<Props> = ({ }) => {
                 <SplitterPanel minSize={3} size={3} style={{ position: 'relative' }}>
                     {/* head tool bar */}
                     <Toolbar start={headStartContent} end={headEndContent} style={{ border: 'none', borderRadius: '0px', padding: 'padding: 0px 20px' }} />
-                    <Divider style={{ position: 'absolute', bottom: '1px', margin: '0px 0px', backgroundColor: '#f5f5f5', height: '2px' }} />
+                    <Divider style={{ position: 'absolute', bottom: '1px', margin: '0px 0px', backgroundColor: '#272727', height: '2px' }} />
                 </SplitterPanel>
                 {/* body area */}
                 <SplitterPanel minSize={96} size={96}>
                     <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
                         {/* left menu */}
-                        <SplitterPanel style={{ position: 'relative', overflow: 'auto' }} className="flex align-items-center justify-content-center" minSize={10} size={10} >
+                        <SplitterPanel style={{ position: 'relative', overflow: 'auto' }} className="flex align-items-center justify-content-center" minSize={15} size={20} >
                             <Accordion multiple activeIndex={[0]} style={{ position: 'absolute', width: '100%' }}>
                                 <AccordionTab header={'NIC'} >
                                     <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none', width: '100%' }} />
@@ -308,7 +374,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                             </Accordion>
                         </SplitterPanel>
                         {/* right area */}
-                        <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={90}>
+                        <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
                             <Splitter layout="vertical"
                                 onResizeEnd={(e) => {
                                     // set data table scroll height
@@ -317,16 +383,18 @@ const IndexPage: React.FC<Props> = ({ }) => {
                                 <SplitterPanel
                                     size={80}
                                     minSize={50}
-                                    className="dataTable flex align-items-center justify-content-center"
+                                    className="dataTableBox flex align-items-center justify-content-center"
                                     style={{ overflow: 'auto', position: 'relative', width: '100%' }}>
                                     <DataTable
+                                        className="dataTable"
+                                        selectionMode={'single'}
                                         resizableColumns
-                                        lazy={true}
                                         onRowClick={dataTableRowClickEvent}
-                                        virtualScrollerOptions={{ itemSize: 50, lazy: true }}
+                                        scrollHeight="400px"
+                                        scrollable
+                                        virtualScrollerOptions={{ itemSize: 26, lazy: true }}
                                         value={netPacketDataTableItemList}
                                         size={'small'}
-                                        selectionMode={'single'}
                                         style={{ width: '100%', height: '100%', whiteSpace: 'nowrap', position: 'absolute' }}>
                                         <Column body={sourceColumnBody} style={{ textAlign: "left" }}
                                             align={'left'} key={'source'} field={'source'} header={'Source'} />
@@ -344,7 +412,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                                     <Splitter layout="horizontal">
                                         <SplitterPanel className="flex align-items-center justify-content-center" size={50} style={{ position: 'relative', overflow: 'auto' }}>
                                             <Accordion multiple activeIndex={[0]} style={{ position: 'absolute', width: '100%' }}>
-                                                <AccordionTab header={123} >
+                                                <AccordionTab header={'head'} >
                                                     <Box sx={{ width: '100%' }}>
                                                         <Typography variant="subtitle2" gutterBottom>
                                                             subtitle2. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
@@ -352,15 +420,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                                                         </Typography>
                                                     </Box>
                                                 </AccordionTab>
-                                                <AccordionTab header={123} >
-                                                    <Box sx={{ width: '100%' }}>
-                                                        <Typography variant="subtitle2" gutterBottom>
-                                                            subtitle2. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-                                                            blanditiis tenetur
-                                                        </Typography>
-                                                    </Box>
-                                                </AccordionTab>
-                                                <AccordionTab header={132} >
+                                                <AccordionTab header={"body"} >
                                                     <Box sx={{ width: '100%' }}>
                                                         <Typography variant="subtitle2" gutterBottom>
                                                             subtitle2. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
@@ -381,7 +441,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                 </SplitterPanel>
                 {/* foot area */}
                 <SplitterPanel minSize={1} size={1} style={{ position: 'relative' }}>
-                    <Divider style={{ position: 'absolute', top: '1px', margin: '0px 0px', backgroundColor: '#f5f5f5', height: '2px' }} />
+                    <Divider style={{ position: 'absolute', top: '1px', margin: '0px 0px', backgroundColor: '#272727', height: '2px' }} />
                     {/* bottom bar */}
                     <Toolbar start={footStartContent} end={footEndContent} style={{ border: 'none', borderRadius: '0px', padding: '0px 20px', width: '100%', zIndex: '10' }} />
                 </SplitterPanel>
