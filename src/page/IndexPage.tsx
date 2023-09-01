@@ -13,7 +13,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api";
 import { isNull } from "../comm/global";
 import { Divider } from "primereact/divider";
-import { GET_NET_CARD_LIST } from "../comm/command";
+import { GET_NET_CARD_LIST, OPEN_SETTING_WINDOW } from "../comm/command";
 import { DEMO, NET_PACKAGE_EVENT } from "../comm/constant";
 import { NetPacketDataTableColumns, NetPacketDataTableItem } from "../comm/types";
 import { emit, listen } from '@tauri-apps/api/event'
@@ -137,8 +137,10 @@ const IndexPage: React.FC<Props> = ({ }) => {
 
     const headEndContent = (
         <React.Fragment>
+            <i className="pi pi-cog" onClick={() => { invoke(OPEN_SETTING_WINDOW) }} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
     );
+
     // data table colums
     const [netPacketDataTableColumns, setNetPacketDataTableColumns] = useState(NetPacketDataTableColumns);
     let tmpNetPacketDataTableItemArr: Array<NetPacketDataTableItem> = [];
@@ -232,7 +234,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
             return <Tag severity="success" value={protocol} />;
         } else if (protocol === 'udp') {
             return <Tag severity="info" value={protocol} />;
-        }else{
+        } else {
             return <Tag severity="info" value={protocol} />;
         }
     }

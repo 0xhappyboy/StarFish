@@ -8,3 +8,7 @@ This is a cool collection of visual operating system tools that will give you al
 |  :----:  | :----:  |
 | Network  | 🕛 |
 | Operating System  | 🕛 |
+
+## 🖼  Style
+![StarFish](https://github.com/0xhappyboy/starfish/blob/main/assets/imgs/style-1.png "StarFish")
+

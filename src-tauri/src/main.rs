@@ -5,6 +5,7 @@ mod command;
 mod events;
 mod net;
 use crate::command::command::get_net_card_list;
+use crate::command::windows::open_setting_window;
 
 fn main() {
     tauri::Builder::default()
@@ -16,7 +17,10 @@ fn main() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_net_card_list])
+        .invoke_handler(tauri::generate_handler![
+            get_net_card_list,
+            open_setting_window
+        ])
         .run(tauri::generate_context!())
         .expect("failed to run app");
 }

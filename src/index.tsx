@@ -10,6 +10,8 @@ import 'primeicons/primeicons.css';
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 //theme
 import "primereact/resources/themes/md-dark-indigo/theme.css";
+// import "primereact/resources/themes/md-light-indigo/theme.css";
+import SettingPage from './page/SettingPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -20,6 +22,7 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<IndexPage />} />
+          <Route path='/Setting' element={<SettingPage />} />
         </Routes>
       </BrowserRouter>
     </PrimeReactProvider>
