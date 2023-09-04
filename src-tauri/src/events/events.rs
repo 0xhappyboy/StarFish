@@ -1,16 +1,16 @@
-use pnet::packet::ethernet::EthernetPacket;
+use pnet::{datalink::NetworkInterface, packet::ethernet::EthernetPacket};
 use tauri::Window;
 
-use crate::net::pack::{get_net_card_by_name, get_net_card_channel, NetPackage};
+use crate::net::{
+    card::{get_net_card_channel, NetCard},
+    pack::NetPackage,
+};
 
 use super::constant::EventTable::NET_PACKAGE_EVENT;
 
 // net package event
-pub fn emit_net_package_event(
-    window: &mut Window,
-    net_card_name: std::string::String,
-) -> Result<(), ()> {
-    let (_send, mut read) = get_net_card_channel(&get_net_card_by_name(net_card_name));
+pub fn emit_net_package_event(window: &mut Window, nc: &NetCard) -> Result<(), ()> {
+    let (_send, mut read) = nc.get_channel();
     loop {
         match read.next() {
             Ok(packet) => {

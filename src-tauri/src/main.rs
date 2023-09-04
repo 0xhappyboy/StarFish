@@ -1,6 +1,7 @@
 use events::events::emit_net_package_event;
 use net::card::NetCard;
 use tauri::Manager;
+use tokio::join;
 mod command;
 mod events;
 mod net;
@@ -11,9 +12,10 @@ fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let mut main_window = app.get_window("main").unwrap();
+            // test net card
             std::thread::spawn(move || {
-                let net_card_list = NetCard::new_list();
-                emit_net_package_event(&mut main_window, "en0".to_string()).unwrap();
+                let net_card_list = NetCard::new_list().unwrap();
+                emit_net_package_event(&mut main_window, net_card_list.get(0).unwrap()).unwrap();
             });
             Ok(())
         })
