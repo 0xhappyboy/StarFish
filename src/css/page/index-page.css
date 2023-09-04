@@ -86,6 +86,14 @@
     box-shadow: none !important;
 }
 
+.p-panelmenu-header-link {
+    padding: 20px !important;
+}
+
+.p-menuitem-link {
+    padding: 10px !important;
+}
+
 .tcp {
     background-color: #e7e6ff !important;
     color: #333;

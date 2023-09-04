@@ -1,7 +1,8 @@
 import React from "react";
-import "../css/page/index-page.css";
+import "../../css/page/index-page.css";
+
 interface Props { }
-const SettingPage: React.FC<Props> = ({ }) => {
+const Cpu: React.FC<Props> = ({ }) => {
     return (
         <div style={{ height: '100%' }}>
 
@@ -9,6 +10,6 @@ const SettingPage: React.FC<Props> = ({ }) => {
     );
 };
 
-export default SettingPage;
+export default Cpu;
 
 

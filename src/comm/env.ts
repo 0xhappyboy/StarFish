@@ -1,1 +1,1 @@
-export const ENV_LANGUAGE = 'cn';
+export const ENV_LANGUAGE = 'en';

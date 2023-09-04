@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import IndexPage from './page/IndexPage';
+import IndexPage from './page/index/IndexPage';
 //core
 import "primereact/resources/primereact.min.css";
 import 'primeicons/primeicons.css';
@@ -11,7 +11,7 @@ import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 //theme
 import "primereact/resources/themes/md-dark-indigo/theme.css";
 // import "primereact/resources/themes/md-light-indigo/theme.css";
-import SettingPage from './page/SettingPage';
+import SettingPage from './page/setting/SettingPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

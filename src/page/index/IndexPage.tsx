@@ -1,32 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Column } from "primereact/column";
-import { DataTable, DataTableRowClickEvent, DataTableSelection } from "primereact/datatable";
+import { DataTable, DataTableRowClickEvent } from "primereact/datatable";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import { createRef, useEffect, useRef, useState } from "react";
-import { Badge } from "primereact/badge";
-import { ScrollPanel } from "primereact/scrollpanel";
-import { ListBox } from "primereact/listbox";
+import { useEffect, useState } from "react";
 import React from "react";
 import { Toolbar } from "primereact/toolbar";
-import "../css/page/index-page.css";
-import { appWindow } from "@tauri-apps/api/window";
+import "../../css/page/index-page.css";
 import { invoke } from "@tauri-apps/api";
-import { isNull } from "../comm/global";
 import { Divider } from "primereact/divider";
-import { GET_NET_CARD_LIST, OPEN_SETTING_WINDOW } from "../comm/command";
-import { DEMO, NET_PACKAGE_EVENT } from "../comm/constant";
-import { NetPacketDataTableColumns, NetPacketDataTableItem } from "../comm/types";
-import { emit, listen } from '@tauri-apps/api/event'
+import { listen } from '@tauri-apps/api/event';
 import { Tag } from "primereact/tag";
-import { Knob } from "primereact/knob";
-import { Accordion, AccordionTab } from "primereact/accordion";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Terminal } from 'primereact/terminal';
 import { TerminalService } from 'primereact/terminalservice';
 import { PanelMenu } from "primereact/panelmenu";
-import { I18N } from "../comm/i18n";
-import { ENV_LANGUAGE } from "../comm/env";
+import { GET_NET_CARD_LIST, OPEN_SETTING_WINDOW } from "../../comm/command";
+import { isNull } from "../../comm/global";
+import { NetPacketDataTableColumns, NetPacketDataTableItem } from "../../comm/types";
+import { I18N } from "../../comm/i18n";
+import { ENV_LANGUAGE } from "../../comm/env";
+import { NET_PACKAGE_EVENT } from "../../comm/constant";
+import NetPacket from "./NetPacket";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
@@ -51,58 +46,17 @@ const IndexPage: React.FC<Props> = ({ }) => {
     //  net card list
     const [netCardList, setNetCardList] = useState<Array<any>>([
         {
-            'name': 123,
-        },
-        {
-            'name': 123,
-        },
-        {
-            'name': 123,
-        },
-        {
-            'name': 123,
-        },
-        {
-            'name': 123,
-        },
-        {
-            'name': 123,
+            'label': 'test',
         }, {
-            'name': 123,
+            'label': 'test',
         }, {
-            'name': 123,
+            'label': 'test',
         }, {
-            'name': 123,
+            'label': 'test',
         }, {
-            'name': 123,
+            'label': 'test',
         }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
-        }, {
-            'name': 123,
+            'label': 'test',
         },
     ]);
     // event init
@@ -116,7 +70,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
             if (!isNull(netCards)) {
                 netCards.forEach((card: { name: any; }) => {
                     netCardArr.push({
-                        'name': card.name
+                        'label': card.name
                     });
                 });
                 setNetCardList([]);
@@ -344,6 +298,16 @@ const IndexPage: React.FC<Props> = ({ }) => {
             TerminalService.emit('clear');
     };
 
+    // right view
+    const [rightView, setRightView] = useState(<NetPacket
+        setDataTableScrollHeight={setDataTableScrollHeight}
+        dataTableRowClickEvent={dataTableRowClickEvent}
+        netPacketDataTableItemList={netPacketDataTableItemList}
+        sourceColumnBody={sourceColumnBody}
+        destinationColumnBody={destinationColumnBody}
+        protocolEleColumnBody={protocolEleColumnBody}
+        sizeColumnBody={sizeColumnBody}
+        infoColumnBody={infoColumnBody} />);
     // left menu item list
     const leftMenuItems = [
         {
@@ -353,7 +317,8 @@ const IndexPage: React.FC<Props> = ({ }) => {
                 {
                     label: I18N[ENV_LANGUAGE].leftMenu.nic,
                     icon: 'pi pi-fw pi-bolt',
-                    items: netCardList
+                    items: netCardList,
+                    onclick: () => { console.log('123') }
                 },
                 {
                     label: 'Wifi',
@@ -365,10 +330,18 @@ const IndexPage: React.FC<Props> = ({ }) => {
             label: I18N[ENV_LANGUAGE].leftMenu.os,
             icon: 'pi pi-fw pi-desktop',
             items: [
+                {
+                    label: I18N[ENV_LANGUAGE].leftMenu.memory,
+                    icon: 'pi pi-fw pi-wifi'
+                },
+                {
+                    label: I18N[ENV_LANGUAGE].leftMenu.cpu,
+                    icon: 'pi pi-fw pi-wifi'
+                }
             ]
         },
         {
-            label: I18N[ENV_LANGUAGE].leftMenu.os,
+            label: I18N[ENV_LANGUAGE].leftMenu.blockchain,
             icon: 'pi pi-fw pi-link',
             items: [
             ]
@@ -405,67 +378,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                         </SplitterPanel>
                         {/* right area */}
                         <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
-                            <Splitter layout="vertical"
-                                onResizeEnd={(e) => {
-                                    // set data table scroll height
-                                    setDataTableScrollHeight(document.getElementsByClassName('dataTable')[0].clientHeight + 'px');
-                                }}>
-                                <SplitterPanel
-                                    size={80}
-                                    minSize={50}
-                                    className="dataTableBox flex align-items-center justify-content-center"
-                                    style={{ overflow: 'auto', position: 'relative', width: '100%' }}>
-                                    <DataTable
-                                        className="dataTable"
-                                        selectionMode={'single'}
-                                        resizableColumns
-                                        onRowClick={dataTableRowClickEvent}
-                                        scrollHeight="400px"
-                                        scrollable
-                                        virtualScrollerOptions={{ itemSize: 26, lazy: true }}
-                                        value={netPacketDataTableItemList}
-                                        size={'small'}
-                                        style={{ width: '100%', height: '100%', whiteSpace: 'nowrap', position: 'absolute' }}>
-                                        <Column body={sourceColumnBody} style={{ textAlign: "left" }}
-                                            align={'left'} key={'source'} field={'source'} header={'Source'} />
-                                        <Column body={destinationColumnBody} style={{ textAlign: "left" }}
-                                            align={'left'} key={'destination'} field={'destination'} header={'Destination'} />
-                                        <Column body={protocolEleColumnBody} style={{ textAlign: "left" }}
-                                            align={'left'} key={'protocolEle'} field={'protocolEle'} header={'Protocol'} />
-                                        <Column body={sizeColumnBody} style={{ textAlign: "left" }}
-                                            align={'left'} key={'size'} field={'size'} header={'Size'} />
-                                        <Column body={infoColumnBody} style={{ textAlign: "left" }}
-                                            align={'left'} key={'info'} field={'info'} header={'Info'} />
-                                    </DataTable>
-                                </SplitterPanel>
-                                <SplitterPanel size={20} minSize={10} className="flex align-items-center justify-content-center" >
-                                    <Splitter layout="horizontal">
-                                        <SplitterPanel className="flex align-items-center justify-content-center" size={50} style={{ position: 'relative', overflow: 'auto' }}>
-                                            <Accordion multiple activeIndex={[0]} style={{ position: 'absolute', width: '100%' }}>
-                                                <AccordionTab header={'head'} >
-                                                    <Box sx={{ width: '100%' }}>
-                                                        <Typography variant="subtitle2" gutterBottom>
-                                                            subtitle2. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-                                                            blanditiis tenetur
-                                                        </Typography>
-                                                    </Box>
-                                                </AccordionTab>
-                                                <AccordionTab header={"body"} >
-                                                    <Box sx={{ width: '100%' }}>
-                                                        <Typography variant="subtitle2" gutterBottom>
-                                                            subtitle2. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-                                                            blanditiis tenetur
-                                                        </Typography>
-                                                    </Box>
-                                                </AccordionTab>
-                                            </Accordion>
-                                        </SplitterPanel>
-                                        <SplitterPanel className="flex align-items-center justify-content-center" size={50} style={{ position: 'relative', overflow: 'auto' }}>
-                                            <Terminal defaultChecked prompt="$" />
-                                        </SplitterPanel>
-                                    </Splitter>
-                                </SplitterPanel>
-                            </Splitter>
+                            {rightView}
                         </SplitterPanel>
                     </Splitter >
                 </SplitterPanel>
