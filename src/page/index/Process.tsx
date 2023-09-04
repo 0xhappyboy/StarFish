@@ -1,14 +1,12 @@
 import React from "react";
 
 interface Props { }
-const Cpu: React.FC<Props> = ({ }) => {
+const Process: React.FC<Props> = ({ }) => {
     return (
         <>
-            cpu
+            process
         </>
     );
 };
 
-export default Cpu;
-
-
+export default Process;

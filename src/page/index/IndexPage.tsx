@@ -1,67 +1,40 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Column } from "primereact/column";
-import { DataTable, DataTableRowClickEvent } from "primereact/datatable";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { Toolbar } from "primereact/toolbar";
-import "../../css/page/index-page.css";
-import { invoke } from "@tauri-apps/api";
 import { Divider } from "primereact/divider";
-import { listen } from '@tauri-apps/api/event';
-import { Tag } from "primereact/tag";
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { Terminal } from 'primereact/terminal';
 import { TerminalService } from 'primereact/terminalservice';
-import { PanelMenu } from "primereact/panelmenu";
 import { GET_NET_CARD_LIST, OPEN_SETTING_WINDOW } from "../../comm/command";
 import { isNull } from "../../comm/global";
-import { NetPacketDataTableColumns, NetPacketDataTableItem } from "../../comm/types";
 import { I18N } from "../../comm/i18n";
 import { ENV_LANGUAGE } from "../../comm/env";
-import { NET_PACKAGE_EVENT } from "../../comm/constant";
-import NetPacket from "./NetPacket";
+import NetPacketDataTable from "./NetPacketDataTable";
+import Foot from "./Foot";
+import LeftMenu from "./LeftMenu";
+import Memory from "./Memory";
+import Cpu from "./Cpu";
+import Process from "./Process";
+import { invoke } from "@tauri-apps/api";
+import OSBasis from "./OSBasis";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    // data table scroll height
-    const [dataTableScrollHeight, setDataTableScrollHeight] = useState('400px');
     // data table scroll top
     const dataTableCrollTop = () => {
         document.getElementsByClassName('dataTableBox')[0].scrollTo(0, 0);
         document.getElementsByClassName('dataTable')[0].scrollTo(0, 0);
     }
-    // data table scroll bottom
-    const dataTableSrollBottom = () => {
-        document.getElementsByClassName('dataTableBox')[0].scrollTo(0, document.getElementsByClassName('dataTableBox')[0].scrollHeight);
-        document.getElementsByClassName('dataTable')[0].scrollTo(0, document.getElementsByClassName('dataTable')[0].scrollHeight);
-    }
-    // network card name
-    const [netCardName, setNetCardName] = useState('');
-    // net packets count
-    let tmpPacketsCount: number = 0;
-    const [packetsCount, setPacketsCount] = useState(tmpPacketsCount);
     //  net card list
     const [netCardList, setNetCardList] = useState<Array<any>>([
         {
             'label': 'test',
-        }, {
-            'label': 'test',
-        }, {
-            'label': 'test',
-        }, {
-            'label': 'test',
-        }, {
-            'label': 'test',
-        }, {
-            'label': 'test',
+            'id': 'netcard',
+            'command': (event: any) => {
+                switchRightView(event);
+            }
         },
     ]);
-    // event init
-    const eventInit = () => {
-    }
     // event listen init
     var netCardArr: Array<any> = [];
     const netCardInit = () => {
@@ -70,13 +43,22 @@ const IndexPage: React.FC<Props> = ({ }) => {
             if (!isNull(netCards)) {
                 netCards.forEach((card: { name: any; }) => {
                     netCardArr.push({
-                        'label': card.name
+                        'label': card.name,
+                        'id': 'netcard',
+                        'command': (event: any) => {
+                            console.log(event);
+                        }
                     });
                 });
                 setNetCardList([]);
                 setNetCardList(netCardArr);
             }
         })
+    }
+    // data table scroll bottom
+    const dataTableSrollBottom = () => {
+        document.getElementsByClassName('dataTableBox')[0].scrollTo(0, document.getElementsByClassName('dataTableBox')[0].scrollHeight);
+        document.getElementsByClassName('dataTable')[0].scrollTo(0, document.getElementsByClassName('dataTable')[0].scrollHeight);
     }
     // head tool menu
     const headStartContent = (
@@ -91,180 +73,15 @@ const IndexPage: React.FC<Props> = ({ }) => {
             <i className="pi pi-angle-double-down" onClick={dataTableSrollBottom} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
     );
-
     const headEndContent = (
         <React.Fragment>
             <i className="pi pi-cog" onClick={() => { invoke(OPEN_SETTING_WINDOW) }} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
     );
-
-    // data table colums
-    const [netPacketDataTableColumns, setNetPacketDataTableColumns] = useState(NetPacketDataTableColumns);
-    let tmpNetPacketDataTableItemArr: Array<NetPacketDataTableItem> = [];
-    let netPacketDataTableItemArr: Array<NetPacketDataTableItem> = [
-        {
-            protocol: 'tcp',
-            protocolEle: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'udp',
-            protocolEle: <Tag value='udp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'udp',
-            protocolEle: <Tag value='udp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'udp',
-            protocolEle: <Tag value='udp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'udp',
-            protocolEle: <Tag value='udp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'udp',
-            protocolEle: <Tag value='udp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'tcp',
-            protocolEle: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'tcp',
-            protocolEle: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-        {
-            protocol: 'tcp',
-            protocolEle: <Tag value='tcp' />,
-            source: 'yuiyyyi',
-            destination: 'yuiyyyi',
-            size: 123,
-            data: 'yuiyyuiyyyiyuiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyuiyyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyuiyyyiyyi',
-            info: 'yuiyyyi',
-        },
-    ];
-
-    // ---------------- make protocol tag ----------------
-    const makeProtocolTag = (protocol: String) => {
-        if (protocol === 'tcp') {
-            return <Tag severity="success" value={protocol} />;
-        } else if (protocol === 'udp') {
-            return <Tag severity="info" value={protocol} />;
-        } else {
-            return <Tag severity="info" value={protocol} />;
-        }
-    }
-    const sourceColumnBody = (rowData: any) => {
-        // eslint-disable-next-line react/style-prop-object
-        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.source}</div>;
-    };
-    const destinationColumnBody = (rowData: any) => {
-        // eslint-disable-next-line react/style-prop-object
-        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.destination}</div>;
-    };
-    const protocolEleColumnBody = (rowData: any) => {
-        // eslint-disable-next-line react/style-prop-object
-        return <div className={rowData.protocol} >{rowData.protocolEle}</div>;
-    };
-    const sizeColumnBody = (rowData: any) => {
-        // eslint-disable-next-line react/style-prop-object
-        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.size}</div>;
-    };
-    const infoColumnBody = (rowData: any) => {
-        // eslint-disable-next-line react/style-prop-object
-        return <div className={rowData.protocol} style={{ height: '26px', lineHeight: '26px' }}>{rowData.info}</div>;
-    };
-    // ---------------- column setting end ----------------
-
-    const [netPacketDataTableItemList, setNetPacketDataTableItemList] = useState(netPacketDataTableItemArr);
-    // listen net packet data
-    const listenNetPacketData = async () => {
-        await listen(NET_PACKAGE_EVENT, (res) => {
-            if (!isNull(res.payload)) {
-                var n_packet = JSON.parse(JSON.stringify(res.payload));
-                let nP = {
-                    protocol: n_packet.protocol,
-                    protocolEle: makeProtocolTag(n_packet.protocol),
-                    source: n_packet.source,
-                    destination: n_packet.destination,
-                    size: n_packet.size,
-                    data: n_packet.data,
-                    info: n_packet.info,
-                };
-                tmpNetPacketDataTableItemArr.push(nP);
-                netPacketDataTableItemArr = [...tmpNetPacketDataTableItemArr];
-                setNetPacketDataTableItemList(netPacketDataTableItemArr);
-                // net packet numberee
-                tmpPacketsCount += 1;
-                setPacketsCount(tmpPacketsCount);
-                // data table scroll bottom
-                dataTableSrollBottom();
-            }
-        })
-    }
-    // data table row click event
-    const dataTableRowClickEvent = (e: DataTableRowClickEvent) => {
-        setNetPacketInfo(netPacketDataTableItemList[e.index].data);
-    }
-    // net packet info
-    const [netPacketInfo, setNetPacketInfo] = useState('');
-    // foot tool menu
-    const footStartContent = (
-        <React.Fragment>
-            <i className="pi pi-github" style={{ fontSize: '14px', marginRight: '15px' }}></i>
-            <i className="pi pi-file" style={{ fontSize: '14px', marginRight: '15px' }}></i>
-            <p style={{ fontSize: '14px', marginRight: '15px' }}>{netCardName}</p>
-        </React.Fragment>
-    );
-    const footEndContent = (
-        <React.Fragment>
-            <i className="pi pi-github" style={{ fontSize: '14px', marginLeft: '15px' }}></i>
-            <i className="pi pi-eye" style={{ fontSize: '15px', marginTop: '3px', marginLeft: '15px' }}></i>
-            <p style={{ fontSize: '14px', marginLeft: '10px' }}>packets : {packetsCount}</p>
-        </React.Fragment>
-    );
-
+    // network card name
+    const [netCardName, setNetCardName] = useState('');
+    // network packet count
+    const [netWorkPacketCount, setNetWorkPacketCount] = useState(0);
     const commandHandler = (text: string) => {
         let response;
         let argsIndex = text.indexOf(' ');
@@ -297,62 +114,106 @@ const IndexPage: React.FC<Props> = ({ }) => {
         else
             TerminalService.emit('clear');
     };
-
+    // switch right view
+    const switchRightView = (e: any) => {
+        console.log('id');
+        console.log(e.item.id);
+        if (e.item.id == 'netcard') {
+            setNetCardName(e.netCardName);
+            setRightView(<NetPacketDataTable setNetCardName={setNetCardName} setNetWorkPacketCount={setNetWorkPacketCount} />);
+        } else if (e.item.id == 'memory') {
+            setRightView(<Memory />);
+        } else if (e.item.id == 'cpu') {
+            setRightView(<Cpu />);
+        } else if (e.item.id == 'wifi') {
+            setRightView(<Cpu />);
+        } else if (e.item.id == 'process') {
+            setRightView(<Process />);
+        } else if (e.item.id == 'os_basis_info') {
+            setRightView(<OSBasis />);
+        }
+    }
     // right view
-    const [rightView, setRightView] = useState(<NetPacket
-        setDataTableScrollHeight={setDataTableScrollHeight}
-        dataTableRowClickEvent={dataTableRowClickEvent}
-        netPacketDataTableItemList={netPacketDataTableItemList}
-        sourceColumnBody={sourceColumnBody}
-        destinationColumnBody={destinationColumnBody}
-        protocolEleColumnBody={protocolEleColumnBody}
-        sizeColumnBody={sizeColumnBody}
-        infoColumnBody={infoColumnBody} />);
+    const [rightView, setRightView] = useState(
+        <NetPacketDataTable setNetCardName={setNetCardName} setNetWorkPacketCount={setNetWorkPacketCount} />
+    );
     // left menu item list
-    const leftMenuItems = [
+    const leftMenuItems = useMemo(() => ([
         {
-            label: I18N[ENV_LANGUAGE].leftMenu.net,
-            icon: 'pi pi-fw pi-globe',
-            items: [
+            'label': I18N[ENV_LANGUAGE].leftMenu.net,
+            'id': 'net',
+            'icon': 'pi pi-fw pi-globe',
+            'items': [
                 {
-                    label: I18N[ENV_LANGUAGE].leftMenu.nic,
-                    icon: 'pi pi-fw pi-bolt',
-                    items: netCardList,
-                    onclick: () => { console.log('123') }
+                    'label': I18N[ENV_LANGUAGE].leftMenu.nic,
+                    'icon': 'pi pi-fw pi-bolt',
+                    'id': 'nic',
+                    'items': netCardList,
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
                 },
                 {
-                    label: 'Wifi',
-                    icon: 'pi pi-fw pi-wifi'
+                    'label': 'Wifi',
+                    'id': 'wifi',
+                    'icon': 'pi pi-fw pi-wifi',
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
                 }
             ]
         },
         {
-            label: I18N[ENV_LANGUAGE].leftMenu.os,
-            icon: 'pi pi-fw pi-desktop',
-            items: [
+            'label': I18N[ENV_LANGUAGE].leftMenu.os,
+            'id': 'os',
+            'icon': 'pi pi-fw pi-desktop',
+            'items': [
                 {
-                    label: I18N[ENV_LANGUAGE].leftMenu.memory,
-                    icon: 'pi pi-fw pi-wifi'
+                    'label': I18N[ENV_LANGUAGE].leftMenu.os_basis_info,
+                    'icon': 'pi pi-fw pi-wifi',
+                    'id': 'os_basis_info',
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
                 },
                 {
-                    label: I18N[ENV_LANGUAGE].leftMenu.cpu,
-                    icon: 'pi pi-fw pi-wifi'
+                    'label': I18N[ENV_LANGUAGE].leftMenu.process,
+                    'icon': 'pi pi-fw pi-wifi',
+                    'id': 'process',
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
+                },
+                {
+                    'label': I18N[ENV_LANGUAGE].leftMenu.memory,
+                    'icon': 'pi pi-fw pi-wifi',
+                    'id': 'memory',
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
+                },
+                {
+                    'label': I18N[ENV_LANGUAGE].leftMenu.cpu,
+                    'icon': 'pi pi-fw pi-wifi',
+                    'id': 'cpu',
+                    'command': (event: any) => {
+                        switchRightView(event);
+                    }
                 }
             ]
         },
         {
-            label: I18N[ENV_LANGUAGE].leftMenu.blockchain,
-            icon: 'pi pi-fw pi-link',
-            items: [
+            'label': I18N[ENV_LANGUAGE].leftMenu.blockchain,
+            'icon': 'pi pi-fw pi-link',
+            'id': 'blockchain',
+            'items': [
             ]
         },
-    ];
+    ]), []);
 
     // init
     useEffect(() => {
-        eventInit();
         netCardInit();
-        listenNetPacketData();
         TerminalService.on('command', commandHandler);
         return () => {
             TerminalService.off('command', commandHandler);
@@ -363,18 +224,12 @@ const IndexPage: React.FC<Props> = ({ }) => {
         <div style={{ height: '100%' }}>
             {/* panel area */}
             <Splitter layout="vertical" gutterSize={0} style={{ height: '100%', width: '100%', borderRadius: "0px", border: 'none' }}>
-                {/* head area */}
-                <SplitterPanel minSize={3} size={3} style={{ position: 'relative' }}>
-                    {/* head tool bar */}
-                    <Toolbar start={headStartContent} end={headEndContent} style={{ border: 'none', borderRadius: '0px', padding: 'padding: 0px 20px' }} />
-                    <Divider style={{ position: 'absolute', bottom: '1px', margin: '0px 0px', backgroundColor: '#272727', height: '2px' }} />
-                </SplitterPanel>
                 {/* body area */}
-                <SplitterPanel minSize={96} size={96}>
+                <SplitterPanel minSize={99} size={99}>
                     <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
                         {/* left menu */}
                         <SplitterPanel style={{ position: 'relative', overflow: 'auto' }} className="flex align-items-center justify-content-center" minSize={15} size={20} >
-                            <PanelMenu multiple model={leftMenuItems} className="w-full md:w-25rem" style={{ position: 'absolute' }} />
+                            <LeftMenu leftMenuItems={leftMenuItems} />
                         </SplitterPanel>
                         {/* right area */}
                         <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>
@@ -385,8 +240,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                 {/* foot area */}
                 <SplitterPanel minSize={1} size={1} style={{ position: 'relative' }}>
                     <Divider style={{ position: 'absolute', top: '1px', margin: '0px 0px', backgroundColor: '#272727', height: '2px' }} />
-                    {/* bottom bar */}
-                    <Toolbar start={footStartContent} end={footEndContent} style={{ border: 'none', borderRadius: '0px', padding: '0px 20px', width: '100%', zIndex: '10' }} />
+                    <Foot netCardName={netCardName} netWorkPacketCount={netWorkPacketCount} />
                 </SplitterPanel>
             </Splitter>
         </div >
@@ -394,5 +248,3 @@ const IndexPage: React.FC<Props> = ({ }) => {
 };
 
 export default IndexPage;
-
-

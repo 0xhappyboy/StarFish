@@ -1,14 +1,14 @@
 import React from "react";
 
 interface Props { }
-const Cpu: React.FC<Props> = ({ }) => {
+const Wifi: React.FC<Props> = ({ }) => {
     return (
         <>
-            cpu
+        Wifi
         </>
     );
 };
 
-export default Cpu;
+export default Wifi;
 
 
