@@ -24,6 +24,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Terminal } from 'primereact/terminal';
 import { TerminalService } from 'primereact/terminalservice';
+import { PanelMenu } from "primereact/panelmenu";
+import { I18N } from "../comm/i18n";
+import { ENV_LANGUAGE } from "../comm/env";
 
 interface Props { }
 const IndexPage: React.FC<Props> = ({ }) => {
@@ -341,6 +344,37 @@ const IndexPage: React.FC<Props> = ({ }) => {
             TerminalService.emit('clear');
     };
 
+    // left menu item list
+    const leftMenuItems = [
+        {
+            label: I18N[ENV_LANGUAGE].leftMenu.net,
+            icon: 'pi pi-fw pi-globe',
+            items: [
+                {
+                    label: I18N[ENV_LANGUAGE].leftMenu.nic,
+                    icon: 'pi pi-fw pi-bolt',
+                    items: netCardList
+                },
+                {
+                    label: 'Wifi',
+                    icon: 'pi pi-fw pi-wifi'
+                }
+            ]
+        },
+        {
+            label: I18N[ENV_LANGUAGE].leftMenu.os,
+            icon: 'pi pi-fw pi-desktop',
+            items: [
+            ]
+        },
+        {
+            label: I18N[ENV_LANGUAGE].leftMenu.os,
+            icon: 'pi pi-fw pi-link',
+            items: [
+            ]
+        },
+    ];
+
     // init
     useEffect(() => {
         eventInit();
@@ -351,8 +385,6 @@ const IndexPage: React.FC<Props> = ({ }) => {
             TerminalService.off('command', commandHandler);
         };
     }, []);
-
-
 
     return (
         <div style={{ height: '100%' }}>
@@ -369,11 +401,7 @@ const IndexPage: React.FC<Props> = ({ }) => {
                     <Splitter layout="horizontal" style={{ borderRadius: "0px", border: 'none' }}>
                         {/* left menu */}
                         <SplitterPanel style={{ position: 'relative', overflow: 'auto' }} className="flex align-items-center justify-content-center" minSize={15} size={20} >
-                            <Accordion multiple activeIndex={[0]} style={{ position: 'absolute', width: '100%' }}>
-                                <AccordionTab header={'NIC'} >
-                                    <ListBox value={setNetCardList} options={netCardList} optionLabel="name" className="w-full" style={{ border: 'none', width: '100%' }} />
-                                </AccordionTab>
-                            </Accordion>
+                            <PanelMenu multiple model={leftMenuItems} className="w-full md:w-25rem" style={{ position: 'absolute' }} />
                         </SplitterPanel>
                         {/* right area */}
                         <SplitterPanel className="flex align-items-center justify-content-center" minSize={60} size={80}>

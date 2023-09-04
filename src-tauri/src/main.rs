@@ -1,7 +1,6 @@
 use events::events::emit_net_package_event;
 use net::card::NetCard;
 use tauri::Manager;
-use tokio::join;
 mod command;
 mod events;
 mod net;

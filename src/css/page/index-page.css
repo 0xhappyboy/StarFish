@@ -1,4 +1,4 @@
-*{
+* {
     user-select: none;
 }
 
@@ -72,6 +72,18 @@
 
 .p-selectable-row {
     font-weight: 500 !important;
+}
+
+.p-panelmenu {
+    position: absolute !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.p-panelmenu-panel {
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .tcp {
