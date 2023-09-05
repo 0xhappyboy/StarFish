@@ -1,0 +1,11 @@
+.p-tabview {
+    margin-top: 0px !important;
+}
+
+.p-tabview-panels {
+    padding: 0px !important;
+}
+
+.p-tabview-nav-link {
+    border: none !important;
+}

@@ -197,7 +197,6 @@ const NetPacketDataTable: React.FC<Props> = ({ setNetCardName, setNetWorkPacketC
     );
     const headEndContent = (
         <React.Fragment>
-            <i className="pi pi-cog" onClick={() => { invoke(OPEN_SETTING_WINDOW) }} style={{ fontSize: '20px', marginRight: '20px' }}></i>
         </React.Fragment>
     );
 
